@@ -5,6 +5,9 @@ dotenv.config({ path: '.env.local' });
 import Stripe from 'stripe';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+// 🔗 Dynamisk base-URL for suksess/avbrutt redirect
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -67,7 +70,7 @@ export default async function handler(req, res) {
 
       console.log("📬 Invoice created:", invoice.id);
 
-      return res.status(200).json({ url: `${process.env.BASE_URL}/takk-for-bestilling.html` });
+      return res.status(200).json({ url: `${BASE_URL}/takk-for-bestilling.html` });
     }
 
     // ✅ Kortbetaling via Stripe Checkout
@@ -80,8 +83,8 @@ export default async function handler(req, res) {
         },
       ],
       customer_email: email,
-      success_url: `${process.env.BASE_URL}/takk-for-bestilling.html`,
-      cancel_url: `${process.env.BASE_URL}/cancel.html`,
+      success_url: `${BASE_URL}/takk-for-bestilling.html`,
+      cancel_url: `${BASE_URL}/cancel.html`,
       metadata: {
         purchaser_name: name,
         purchaser_email: email,

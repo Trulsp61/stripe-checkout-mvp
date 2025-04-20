@@ -106,6 +106,15 @@ export default async function handler(req, res) {
       console.log('❌ Payment failed:', obj.id);
       break;
 
+      case 'checkout.session.completed': {
+        console.log('✅ Checkout fullført:', obj.id);
+      
+        const metadata = obj.metadata || {};
+      
+        await postToSlack(obj, metadata);
+        break;
+      }
+
     case 'customer.subscription.deleted':
       console.log('❌ Subscription cancelled:', obj.id);
       break;
