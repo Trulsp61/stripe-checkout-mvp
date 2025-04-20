@@ -1,17 +1,56 @@
 // api/webhook.js
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.local' });
+
 import Stripe from 'stripe';
 import { buffer } from 'micro';
+import fetch from 'node-fetch';
 
 export const config = {
   api: {
-    bodyParser: false, // Required for raw Stripe signature verification
+    bodyParser: false,
   },
 };
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
+// 🧩 Slack posting helper
+async function postToSlack(obj, metadata) {
+  const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+  if (!webhookUrl) {
+    console.warn('⚠️ No Slack webhook URL defined');
+    return;
+  }
+
+  const message = `
+👤 *Navn:* ${metadata.purchaser_name || 'Ukjent'}
+📧 *E-post:* ${metadata.purchaser_email || 'Ukjent'}
+🏢 *Bedrift:* ${metadata.company_name || 'Ukjent'}
+🏷️ *Org.nr:* ${metadata.org_number || 'Ukjent'}
+💳 *Betaling:* ${obj.payment_method_types?.[0] || 'Ukjent'}
+
+🛠️ *Handling:* Bruk Cardboard og promokode for å opprette "Bedrift 10 lisenser"
+`;
+
+  try {
+    const res = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text: `@channel\n🎉 *Nytt kjøp!* Hvem kan følge opp?\n\n${message}`,
+      }),
+    });
+
+    if (!res.ok) {
+      console.error('❌ Failed to post to Slack:', await res.text());
+    }
+  } catch (err) {
+    console.error('❌ Slack webhook error:', err.message);
+  }
+}
+
+// ✅ Webhook handler
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).send('Method Not Allowed');
@@ -29,30 +68,50 @@ export default async function handler(req, res) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  // ✅ Handle relevant events
-  switch (event.type) {
+  const eventType = event.type;
+  const obj = event.data.object;
+
+  switch (eventType) {
     case 'invoice.created':
-      console.log('🧾 Invoice created:', event.data.object.id);
-      // TODO: Grant temporary access to the platform here
+      console.log('🧾 Invoice created:', obj.id);
       break;
 
-    case 'invoice.paid':
-      console.log('✅ Invoice paid:', event.data.object.id);
-      // TODO: Confirm permanent access
+    case 'invoice.finalized':
+      console.log('📬 Invoice finalized:', obj.id);
+      try {
+        await stripe.invoices.sendInvoice(obj.id);
+        console.log('✅ Invoice email sent!');
+      } catch (err) {
+        console.error('❌ Failed to send invoice email:', err.message);
+      }
       break;
+
+    case 'invoice.sent':
+      console.log('📨 Stripe har sendt faktura til kunden:', obj.customer_email);
+      break;
+
+    case 'invoice.paid': {
+      console.log('✅ Invoice paid:', obj.id);
+
+      const metadata =
+        obj.metadata ||
+        obj.lines?.data[0]?.price?.product?.metadata ||
+        {};
+
+      await postToSlack(obj, metadata);
+      break;
+    }
 
     case 'invoice.payment_failed':
-      console.log('❌ Payment failed:', event.data.object.id);
-      // TODO: Revoke access
+      console.log('❌ Payment failed:', obj.id);
       break;
 
     case 'customer.subscription.deleted':
-      console.log('❌ Subscription cancelled:', event.data.object.id);
-      // TODO: Revoke access
+      console.log('❌ Subscription cancelled:', obj.id);
       break;
 
     default:
-      console.log(`Unhandled event type: ${event.type}`);
+      console.log(`Unhandled event type: ${eventType}`);
   }
 
   res.json({ received: true });

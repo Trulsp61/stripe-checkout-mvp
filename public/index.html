@@ -1,0 +1,321 @@
+<!-- Alt er som sist – bare e-postvalideringen er forbedret -->
+<!-- Dette er nå Beste-versjon med komplett validering -->
+
+<!DOCTYPE html>
+<html lang="no">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Videocation - Køpsside</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Proxima+Nova:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      font-family: 'Proxima Nova', sans-serif;
+      background-color: #737373;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      background-color: #231f20;
+      z-index: 1000;
+      height: 64px;
+    }
+
+    .header-container {
+      display: flex;
+      align-items: stretch;
+      height: 100%;
+      padding-left: 20px;
+    }
+
+    .logo-link {
+      display: flex;
+      align-items: stretch;
+    }
+
+    .logo-image {
+      height: 100%;
+      display: block;
+    }
+
+    .form-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: calc(100vh - 64px);
+      padding: 2rem;
+    }
+
+    form {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #231f20;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-size: 1.25rem;
+    }
+
+    .product-name {
+      color: #2B7B93;
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+
+    .product-subtitle {
+      font-size: 1.1rem;
+      font-weight: normal;
+      margin-top: 0.4rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .product-price {
+      font-size: 1.2rem;
+      font-weight: normal;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: normal;
+    }
+
+    input[type="text"],
+    input[type="email"] {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    #orgnr {
+      background-color: #e0e0e0;
+    }
+
+    fieldset {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+    }
+
+    legend {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .radio-option input {
+      margin-right: 0.5rem;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 0.9rem;
+      margin-top: -0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background: #2B7B93;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background: #b0c8cf;
+      cursor: not-allowed;
+    }
+
+    button:hover:enabled {
+      background: #24667a;
+    }
+
+    input::placeholder {
+      color: #999;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="header-container">
+      <a href="https://www.videocation.no" class="logo-link">
+        <img src="https://hjelpesenter.videocation.no/hs-fs/hubfs/VC.NO_new%20yellow%20(1)-3.png?width=120&height=96"
+          alt="Videocation-logo" class="logo-image" />
+      </a>
+    </div>
+  </header>
+  <main class="form-wrapper">
+    <form id="checkout-form">
+      <h1>
+        <div class="product-name" style="text-transform: uppercase;">SMÅBEDRIFT</div>
+        <div class="product-subtitle">Årsabonnement 10 brukere</div>
+        <div class="product-price"><span style="font-weight: bold;">kr 2 499</span> (eks. MVA)</div>
+      </h1>
+      <label for="company">Firmanavn</label>
+      <input type="text" id="company" name="company" placeholder="Skriv ditt firmanavn her og bekreft fra listen"
+        required autocomplete="off" list="company-suggestions" />
+      <datalist id="company-suggestions"></datalist>
+
+      <label for="orgnr">Organisasjonsnummer</label>
+      <input type="text" id="orgnr" name="orgnr" placeholder="Fylles ut automatisk" required readonly />
+    
+
+      <label for="name">Navn</label>
+      <input type="text" id="name" name="name" placeholder="Skriv fornavn etternavn" required />
+
+      <label for="email">E-post</label>
+      <input type="email" id="email" name="email" placeholder="navn@dinbedrift.no" required />
+      <div id="email-error" class="error-message" style="display: none;">Vennligst bruk din firma-e-post</div>
+
+      <fieldset>
+        <legend>Velg betalingsmåte</legend>
+        <label class="radio-option">
+          <input type="radio" name="payment_method" value="card" checked /> Kortbetaling
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="payment_method" value="invoice" /> Faktura
+        </label>
+      </fieldset>
+
+      <button type="submit" id="submit-button" disabled>Gå til betaling</button>
+    </form>
+  </main>
+
+  <script>
+    const orgnrInput = document.getElementById('orgnr');
+    const companyInput = document.getElementById('company');
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('email');
+    const submitButton = document.getElementById('submit-button');
+    const emailError = document.getElementById('email-error');
+    const datalist = document.getElementById('company-suggestions');
+
+    const allowedDomains = ['.no', '.com', '.as', '.io', '.net', '.org', '.co'];
+    const forbiddenDomains = ['gmail.com', 'hotmail.com', 'live.com', 'icloud.com', 'mac.com', 'outlook.com', 'live.com', 'yahoo.com', 'msn.com', 'aol.com', 'protonmail.com', 'me.com', 'zoho.com', 'gmx.com', 'pm.me'];
+
+    async function fetchCompanySuggestions(query) {
+      const url = `https://data.brreg.no/enhetsregisteret/api/enheter?navn=${encodeURIComponent(query)}`;
+      const response = await fetch(url);
+      if (response.ok) {
+        const json = await response.json();
+        datalist.innerHTML = '';
+        json._embedded.enheter.slice(0, 5).forEach(company => {
+          const option = document.createElement('option');
+          option.value = company.navn;
+          option.setAttribute('data-orgnr', company.organisasjonsnummer);
+          datalist.appendChild(option);
+        });
+      }
+    }
+
+    function validateEmail(email) {
+      const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+      if (!emailRegex.test(email)) return false;
+      const domain = email.split('@')[1]?.toLowerCase();
+      if (!domain) return false;
+      const hasValidTLD = allowedDomains.some(tld => domain.endsWith(tld));
+      const isForbidden = forbiddenDomains.includes(domain);
+      return hasValidTLD && !isForbidden;
+    }
+
+    function updateButtonState() {
+      const emailValid = validateEmail(emailInput.value);
+      emailError.style.display = emailValid ? 'none' : 'block';
+      const isValid =
+        orgnrInput.value.length === 9 &&
+        companyInput.value &&
+        nameInput.value.trim() &&
+        emailValid;
+      submitButton.disabled = !isValid;
+    }
+
+    companyInput.addEventListener('input', () => {
+      fetchCompanySuggestions(companyInput.value);
+      updateButtonState();
+    });
+
+    companyInput.addEventListener('change', () => {
+      const selectedOption = Array.from(datalist.options).find(option => option.value === companyInput.value);
+      if (selectedOption) {
+        orgnrInput.value = selectedOption.getAttribute('data-orgnr');
+      } else {
+        orgnrInput.value = '';
+      }
+      updateButtonState();
+    });
+
+    [companyInput, nameInput, emailInput].forEach(input => {
+      input.addEventListener('input', updateButtonState);
+    });
+
+    document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        email: emailInput.value,
+        tier: new URLSearchParams(window.location.search).get('tier') || 'mid',
+        company: companyInput.value,
+        orgnr: orgnrInput.value,
+        name: nameInput.value,
+        payment_method: document.querySelector('input[name="payment_method"]:checked').value
+      };
+
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const { url } = await res.json();
+      window.location = url;
+    });
+  </script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const tier = urlParams.get('tier') || 'mid';
+
+    const priceMap = {
+      low: '1 299',
+      mid: '2 499',
+      high: '4 999'
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const priceElement = document.querySelector('.product-price');
+      if (priceElement && priceMap[tier]) {
+        priceElement.innerHTML = `<span style="font-weight: bold;">kr ${priceMap[tier]}</span> (eks. MVA)`;
+      }
+    });
+  </script>
+</body>
+
+</html>

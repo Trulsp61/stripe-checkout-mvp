@@ -1,0 +1,11 @@
+{
+    "name": "stripe-checkout-mvp",
+    "version": "1.0.0",
+    "type": "module",
+    "dependencies": {
+        "dotenv": "^16.5.0",
+        "micro": "^9.3.4",
+        "node-fetch": "^3.3.2",
+        "stripe": "^12.0.0"
+    }
+}
