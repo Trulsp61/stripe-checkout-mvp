@@ -33,9 +33,11 @@ export default async function handler(req, res) {
   const priceId = priceMap[tier] || priceMap.mid;
 
   try {
+    let customer;
+
     if (payment_method === 'invoice') {
       // ✅ Opprett kunde
-      const customer = await stripe.customers.create({
+      customer = await stripe.customers.create({
         email,
         name,
         metadata: {
@@ -82,31 +84,32 @@ export default async function handler(req, res) {
     }
 
     // ✅ Opprett Stripe customer med metadata
-const customer = await stripe.customers.create({
-  email,
-  name,
-  metadata: {
-    purchaser_name: name,
-    purchaser_email: email,
-    company_name: company,
-    org_number: orgnr,
-    payment_method: 'Kort',
-  },
-});
+    customer = await stripe.customers.create({
+      email,
+      name,
+      metadata: {
+        purchaser_name: name,
+        purchaser_email: email,
+        company_name: company,
+        org_number: orgnr,
+        payment_method: 'Kort',
+      },
+    });
 
-// ✅ Kortbetaling via Stripe Checkout
-const session = await stripe.checkout.sessions.create({
-  mode: 'payment',
-  customer: customer.id, // 🔄 Bruk den opprettede kunden
-  line_items: [
-    {
-      price: priceId,
-      quantity: 1,
-    },
-  ],
-  success_url: `${BASE_URL}/takk-for-bestilling.html`,
-  cancel_url: `${BASE_URL}/cancel.html`,
-});
+
+    // ✅ Opprett Checkout Session med den nye kunden
+    const session = await stripe.checkout.sessions.create({
+      mode: 'payment',
+      customer: customer.id, // 👈 Legg til dette!
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
+      success_url: `${BASE_URL}/takk-for-bestilling.html`,
+      cancel_url: `${BASE_URL}/cancel.html`,
+    });
 
     return res.status(200).json({ url: session.url });
   } catch (err) {
