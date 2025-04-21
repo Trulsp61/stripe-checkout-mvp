@@ -81,33 +81,32 @@ export default async function handler(req, res) {
       return res.status(200).json({ url: `${BASE_URL}/takk-for-bestilling.html` });
     }
 
-    // ✅ Kortbetaling via Stripe Checkout
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
-      customer_email: email,
-      success_url: `${BASE_URL}/takk-for-bestilling.html`,
-      cancel_url: `${BASE_URL}/cancel.html`,
-      metadata: {
-        purchaser_name: name,
-        purchaser_email: email,
-        company_name: company,
-        org_number: orgnr,
-        payment_method: 'Kort',
-      },
-      custom_fields: [
-        {
-          key: 'company_name',
-          label: { type: 'custom', custom: 'Bedriftens navn' },
-          type: 'text',
-        },
-      ],
-    });
+    // ✅ Opprett Stripe customer med metadata
+const customer = await stripe.customers.create({
+  email,
+  name,
+  metadata: {
+    purchaser_name: name,
+    purchaser_email: email,
+    company_name: company,
+    org_number: orgnr,
+    payment_method: 'Kort',
+  },
+});
+
+// ✅ Kortbetaling via Stripe Checkout
+const session = await stripe.checkout.sessions.create({
+  mode: 'payment',
+  customer: customer.id, // 🔄 Bruk den opprettede kunden
+  line_items: [
+    {
+      price: priceId,
+      quantity: 1,
+    },
+  ],
+  success_url: `${BASE_URL}/takk-for-bestilling.html`,
+  cancel_url: `${BASE_URL}/cancel.html`,
+});
 
     return res.status(200).json({ url: session.url });
   } catch (err) {

@@ -28,7 +28,7 @@ async function postToSlack(obj, metadata) {
 📧 *E-post:* ${metadata.purchaser_email || 'Ukjent'}
 🏢 *Bedrift:* ${metadata.company_name || 'Ukjent'}
 🏷️ *Org.nr:* ${metadata.org_number || 'Ukjent'}
-💳 *Betaling:* ${obj.payment_method_types?.[0] || 'Ukjent'}
+💳 *Betaling:* ${metadata.payment_method || obj.payment_method_types?.[0] || 'Ukjent'}
 
 🛠️ *Handling:* Bruk Cardboard og promokode for å opprette "Bedrift 10 lisenser"
 `;
@@ -72,40 +72,43 @@ export default async function handler(req, res) {
   const obj = event.data.object;
 
   switch (eventType) {
-    case 'invoice.created':
-      console.log('🧾 Invoice created:', obj.id);
-      break;
-
-    case 'invoice.finalized':
+    case 'invoice.finalized': {
       console.log('📬 Invoice finalized:', obj.id);
+    
       try {
         await stripe.invoices.sendInvoice(obj.id);
         console.log('✅ Invoice email sent!');
       } catch (err) {
         console.error('❌ Failed to send invoice email:', err.message);
       }
-      break;
-
-      case 'invoice.sent': {
-        console.log('📨 Stripe har sendt faktura til kunden:', obj.customer_email);
-      
-        let metadata = {};
-      
-        try {
-          if (obj.customer) {
-            const customer = await stripe.customers.retrieve(obj.customer);
-            metadata = customer.metadata || {};
-          } else {
-            console.warn('⚠️ Ingen customer-ID i invoice.sent event');
-          }
-        } catch (err) {
-          console.warn('⚠️ Kunne ikke hente kunde-metadata:', err.message);
-          metadata = obj.metadata || {};
-        }
-      
+    
+      // Midlertidig Slack-varsel i test
+      try {
+        const customer = await stripe.customers.retrieve(obj.customer);
+        const metadata = customer.metadata || {};
         await postToSlack(obj, metadata);
-        break;
+      } catch (err) {
+        console.error('❌ Slack fallback error:', err.message);
       }
+    
+      break;
+    }
+
+    // case 'invoice.sent': {
+    //   console.log('📨 Stripe har sendt faktura til kunden:', obj.customer_email);
+
+    //   let metadata = {};
+
+    //   try {
+    //     const customer = await stripe.customers.retrieve(obj.customer);
+    //     metadata = customer.metadata || {};
+    //   } catch (err) {
+    //     console.warn('⚠️ Kunne ikke hente kunde-metadata:', err.message);
+    //   }
+
+    //   await postToSlack(obj, metadata);
+    //   break;
+    // }
 
     case 'invoice.paid': {
       console.log('✅ Invoice paid:', obj.id);
@@ -126,7 +129,20 @@ export default async function handler(req, res) {
       case 'checkout.session.completed': {
         console.log('✅ Checkout fullført:', obj.id);
       
-        const metadata = obj.metadata || {};
+        let metadata = {};
+      
+        try {
+          if (obj.customer) {
+            const customer = await stripe.customers.retrieve(obj.customer);
+            metadata = customer.metadata || {};
+          } else {
+            console.warn('⚠️ Ingen customer-ID i checkout.session.completed');
+            metadata = obj.metadata || {};
+          }
+        } catch (err) {
+          console.warn('⚠️ Klarte ikke hente metadata fra kunden:', err.message);
+          metadata = obj.metadata || {};
+        }
       
         await postToSlack(obj, metadata);
         break;
