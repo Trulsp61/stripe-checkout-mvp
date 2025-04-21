@@ -89,10 +89,14 @@ export default async function handler(req, res) {
       case 'invoice.sent': {
         console.log('📨 Stripe har sendt faktura til kunden:', obj.customer_email);
       
-        const metadata =
-          obj.metadata ||
-          obj.customer_metadata || // fallback hvis du bruker det
-          obj.lines?.data[0]?.price?.product?.metadata || {};
+        let metadata = {};
+      
+        try {
+          const customer = await stripe.customers.retrieve(obj.customer);
+          metadata = customer.metadata || {};
+        } catch (err) {
+          console.warn('⚠️ Kunne ikke hente kunde-metadata:', err.message);
+        }
       
         await postToSlack(obj, metadata);
         break;
