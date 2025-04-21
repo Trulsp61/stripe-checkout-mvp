@@ -86,9 +86,17 @@ export default async function handler(req, res) {
       }
       break;
 
-    case 'invoice.sent':
-      console.log('📨 Stripe har sendt faktura til kunden:', obj.customer_email);
-      break;
+      case 'invoice.sent': {
+        console.log('📨 Stripe har sendt faktura til kunden:', obj.customer_email);
+      
+        const metadata =
+          obj.metadata ||
+          obj.customer_metadata || // fallback hvis du bruker det
+          obj.lines?.data[0]?.price?.product?.metadata || {};
+      
+        await postToSlack(obj, metadata);
+        break;
+      }
 
     case 'invoice.paid': {
       console.log('✅ Invoice paid:', obj.id);
