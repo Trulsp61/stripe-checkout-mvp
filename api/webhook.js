@@ -27,7 +27,7 @@ async function postToSlack(obj, metadata) {
 👤 *Navn:* ${metadata.purchaser_name || 'Ukjent'}
 📧 *E-post:* ${metadata.purchaser_email || 'Ukjent'}
 🏢 *Bedrift:* ${metadata.company_name || 'Ukjent'}
-🏷️ *Org.nr:* ${metadata.org_number || 'Ukjent'}
+🏷️ **Org.nr:** ${metadata.org_number || 'Ukjent'}
 💳 *Betaling:* ${metadata.payment_method || obj.payment_method_types?.[0] || 'Ukjent'}
 
 🛠️ *Handling:* Bruk Cardboard og promokode for å opprette "Bedrift 10 lisenser"
