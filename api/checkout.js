@@ -64,6 +64,7 @@ export default async function handler(req, res) {
         collection_method: 'send_invoice',
         days_until_due: 14,
         auto_advance: true,
+        pending_invoice_items_behavior: 'include',
         description: 'Spørsmål? Kontakt oss på hjelp@videocation.no\nVi svarer innen 24 timer på virkedager.',
         footer: 'Takk for at du velger Videocation som din kompetansepartner.',
         metadata: {
