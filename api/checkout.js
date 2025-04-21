@@ -63,9 +63,16 @@ export default async function handler(req, res) {
         customer: customer.id,
         collection_method: 'send_invoice',
         days_until_due: 14,
-        auto_advance: true, // Viktig for automatisk utsending
+        auto_advance: true,
         description: 'Spørsmål? Kontakt oss på hjelp@videocation.no\nVi svarer innen 24 timer på virkedager.',
         footer: 'Takk for at du velger Videocation som din kompetansepartner.',
+        metadata: {
+          purchaser_name: name,
+          purchaser_email: email,
+          company_name: company,
+          org_number: orgnr,
+          payment_method: 'Faktura',
+        },
       });
 
       console.log("📬 Invoice created:", invoice.id);
