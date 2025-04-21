@@ -92,10 +92,15 @@ export default async function handler(req, res) {
         let metadata = {};
       
         try {
-          const customer = await stripe.customers.retrieve(obj.customer);
-          metadata = customer.metadata || {};
+          if (obj.customer) {
+            const customer = await stripe.customers.retrieve(obj.customer);
+            metadata = customer.metadata || {};
+          } else {
+            console.warn('⚠️ Ingen customer-ID i invoice.sent event');
+          }
         } catch (err) {
           console.warn('⚠️ Kunne ikke hente kunde-metadata:', err.message);
+          metadata = obj.metadata || {};
         }
       
         await postToSlack(obj, metadata);
