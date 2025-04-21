@@ -143,7 +143,7 @@ export default async function handler(req, res) {
           console.warn('⚠️ Klarte ikke hente metadata fra kunden:', err.message);
           metadata = obj.metadata || {};
         }
-      
+        console.log('📦 Metadata hentet i checkout.session.completed:', metadata);
         await postToSlack(obj, metadata);
         break;
       }
