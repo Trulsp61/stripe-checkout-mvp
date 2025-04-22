@@ -188,7 +188,7 @@
 
       <label for="orgnr">Organisasjonsnummer</label>
       <input type="text" id="orgnr" name="orgnr" placeholder="Fylles ut automatisk" required readonly />
-    
+
 
       <label for="name">Navn</label>
       <input type="text" id="name" name="name" placeholder="Skriv fornavn etternavn" required />
@@ -206,6 +206,14 @@
           <input type="radio" name="payment_method" value="invoice" /> Faktura
         </label>
       </fieldset>
+
+      <div style="margin-bottom: 1rem;">
+        <label style="font-size: 0.9rem;">
+          <input type="checkbox" id="consent-checkbox" style="margin-right: 0.5em;" />
+          Jeg har lest og akseptert <a href="https://app.videocation.no/no/tos" target="_blank">salgsbetingelser</a> og
+          <a href="https://app.videocation.no/no/privacy_policy " target="_blank">personvernerklæringen</a>.
+        </label>
+      </div>
 
       <button type="submit" id="submit-button" disabled>Gå til betaling</button>
     </form>
@@ -251,11 +259,13 @@
     function updateButtonState() {
       const emailValid = validateEmail(emailInput.value);
       emailError.style.display = emailValid ? 'none' : 'block';
+      const consentChecked = document.getElementById('consent-checkbox').checked;
       const isValid =
         orgnrInput.value.length === 9 &&
         companyInput.value &&
         nameInput.value.trim() &&
-        emailValid;
+        emailValid &&
+        consentChecked;
       submitButton.disabled = !isValid;
     }
 
