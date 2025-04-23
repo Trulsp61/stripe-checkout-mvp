@@ -1,26 +1,115 @@
 <!DOCTYPE html>
 <html lang="no">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Kjøp avbrutt</title>
-    <style>
-      body {
-        font-family: sans-serif;
-        text-align: center;
-        margin-top: 5rem;
-      }
-      a {
-        color: #3b82f6;
-        text-decoration: none;
-        font-weight: bold;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Du har avbrutt kjøpet</h1>
-    <p>Ingen betaling ble gjennomført.</p>
-    <p>
-      <a href="/">Gå tilbake og prøv igjen</a>
-    </p>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kjøp avbrutt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Proxima+Nova:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      font-family: 'Proxima Nova', sans-serif;
+      background-color: #737373;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      background-color: #231f20;
+      z-index: 1000;
+      height: 64px;
+    }
+
+    .header-container {
+      display: flex;
+      align-items: stretch;
+      height: 100%;
+      padding-left: 20px;
+    }
+
+    .logo-link {
+      display: flex;
+      align-items: stretch;
+    }
+
+    .logo-image {
+      height: 100%;
+      display: block;
+    }
+
+    .form-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: calc(100vh - 64px);
+      padding: 2rem;
+    }
+
+    .thankyou-box {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #231f20;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .thankyou-box h1 {
+      margin-bottom: 1rem;
+      font-size: 1.4rem;
+      color: #b91c1c;
+    }
+
+    .thankyou-box p {
+      margin-bottom: 1.5rem;
+      font-size: 1rem;
+      color: #333;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: #2B7B93;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+
+    .btn:hover {
+      background: #24667a;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="header-container">
+      <a href="https://www.videocation.no" class="logo-link">
+        <img src="https://hjelpesenter.videocation.no/hs-fs/hubfs/VC.NO_new%20yellow%20(1)-3.png?width=120&height=96"
+          alt="Videocation-logo" class="logo-image" />
+      </a>
+    </div>
+  </header>
+
+  <main class="form-wrapper">
+    <div class="thankyou-box">
+      <h1>Du har avbrutt kjøpet</h1>
+      <p>Ingen betaling ble gjennomført. Du kan prøve igjen når som helst.</p>
+      <a href="/" class="btn">Tilbake til bestilling</a>
+    </div>
+  </main>
+</body>
+
 </html>
