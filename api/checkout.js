@@ -61,22 +61,26 @@ export default async function handler(req, res) {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // ✅ Opprett og send faktura med auto_advance
-      const invoice = await stripe.invoices.create({
-        customer: customer.id,
-        collection_method: 'send_invoice',
-        days_until_due: 14,
-        auto_advance: true,
-        pending_invoice_items_behavior: 'include',
-        description: 'Spørsmål? Kontakt oss på hjelp@videocation.no\nVi svarer innen 24 timer på virkedager.',
-        footer: 'Takk for at du velger Videocation som din kompetansepartner.',
-        metadata: {
-          purchaser_name: name,
-          purchaser_email: email,
-          company_name: company,
-          org_number: orgnr,
-          payment_method: 'Faktura',
-        },
-      });
+const invoice = await stripe.invoices.create({
+  customer: customer.id,
+  collection_method: 'send_invoice',
+  days_until_due: 14,
+  auto_advance: true,
+  pending_invoice_items_behavior: 'include',
+  description: 'Spørsmål? Kontakt oss på hjelp@videocation.no\nVi svarer innen 24 timer på virkedager.',
+  footer: 'Takk for at du velger Videocation som din kompetansepartner.',
+  metadata: {
+    purchaser_name: name,
+    purchaser_email: email,
+    company_name: company,
+    org_number: orgnr,
+    payment_method: 'Faktura',
+  },
+});
+
+// 📨 Send faktura manuelt (for å sikre at den faktisk går ut)
+await stripe.invoices.sendInvoice(invoice.id);
+console.log("✅ Faktura sendt manuelt etter opprettelse");
 
       console.log("📬 Invoice created:", invoice.id);
 
