@@ -306,6 +306,7 @@
       });
 
       const { url } = await res.json();
+      localStorage.setItem('payment_method', data.payment_method);
       window.location = url;
     });
   </script>
