@@ -25,9 +25,9 @@ export default async function handler(req, res) {
   console.log("💳 Selected payment method:", payment_method);
 
   const priceMap = {
-    low: 'price_1RETjmPGVR57I7gr0BqQFILz',
-    mid: 'price_1RETjmPGVR57I7grGiRX3TEg',
-    high: 'price_1RETgZPGVR57I7greWUc4DyJ',
+    low: 'price_1ROEmQAl3xtbZVsPDZUpzDAt',
+    mid: 'price_1ROEnjAl3xtbZVsP4WpixP37',
+    high: 'price_1ROEodAl3xtbZVsPixq0eJuu',
   };
 
   const priceId = priceMap[tier] || priceMap.mid;
