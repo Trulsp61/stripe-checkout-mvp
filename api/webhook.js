@@ -72,85 +72,44 @@ export default async function handler(req, res) {
   const obj = event.data.object;
 
   switch (eventType) {
-    case 'invoice.finalized': {
-      console.log('📬 Invoice finalized:', obj.id);
-    
-      try {
-        await stripe.invoices.sendInvoice(obj.id);
-        console.log('✅ Invoice email sent!');
-      } catch (err) {
-        console.error('❌ Failed to send invoice email:', err.message);
-      }
-    
-      // Midlertidig Slack-varsel i test
+    case 'invoice.sent': {
+      console.log('📨 Stripe har sendt faktura til kunden:', obj.customer_email);
+
+      let metadata = {};
+
       try {
         const customer = await stripe.customers.retrieve(obj.customer);
-        const metadata = customer.metadata || {};
-        await postToSlack(obj, metadata);
+        metadata = customer.metadata || {};
       } catch (err) {
-        console.error('❌ Slack fallback error:', err.message);
+        console.warn('⚠️ Kunne ikke hente kunde-metadata:', err.message);
       }
-    
-      break;
-    }
-
-    // case 'invoice.sent': {
-    //   console.log('📨 Stripe har sendt faktura til kunden:', obj.customer_email);
-
-    //   let metadata = {};
-
-    //   try {
-    //     const customer = await stripe.customers.retrieve(obj.customer);
-    //     metadata = customer.metadata || {};
-    //   } catch (err) {
-    //     console.warn('⚠️ Kunne ikke hente kunde-metadata:', err.message);
-    //   }
-
-    //   await postToSlack(obj, metadata);
-    //   break;
-    // }
-
-    case 'invoice.paid': {
-      console.log('✅ Invoice paid:', obj.id);
-
-      const metadata =
-        obj.metadata ||
-        obj.lines?.data[0]?.price?.product?.metadata ||
-        {};
 
       await postToSlack(obj, metadata);
       break;
     }
 
-    case 'invoice.payment_failed':
-      console.log('❌ Payment failed:', obj.id);
-      break;
+    case 'checkout.session.completed': {
+      console.log('✅ Checkout fullført:', obj.id);
 
-      case 'checkout.session.completed': {
-        console.log('✅ Checkout fullført:', obj.id);
-      
-        let metadata = {};
-      
-        try {
-          if (obj.customer) {
-            const customer = await stripe.customers.retrieve(obj.customer);
-            metadata = customer.metadata || {};
-          } else {
-            console.warn('⚠️ Ingen customer-ID i checkout.session.completed');
-            metadata = obj.metadata || {};
-          }
-        } catch (err) {
-          console.warn('⚠️ Klarte ikke hente metadata fra kunden:', err.message);
+      let metadata = {};
+
+      try {
+        if (obj.customer) {
+          const customer = await stripe.customers.retrieve(obj.customer);
+          metadata = customer.metadata || {};
+        } else {
+          console.warn('⚠️ Ingen customer-ID i checkout.session.completed');
           metadata = obj.metadata || {};
         }
-        console.log('📦 Metadata hentet i checkout.session.completed:', metadata);
-        await postToSlack(obj, metadata);
-        break;
+      } catch (err) {
+        console.warn('⚠️ Klarte ikke hente metadata fra kunden:', err.message);
+        metadata = obj.metadata || {};
       }
 
-    case 'customer.subscription.deleted':
-      console.log('❌ Subscription cancelled:', obj.id);
+      console.log('📦 Metadata hentet i checkout.session.completed:', metadata);
+      await postToSlack(obj, metadata);
       break;
+    }
 
     default:
       console.log(`Unhandled event type: ${eventType}`);
