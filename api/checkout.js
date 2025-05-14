@@ -40,6 +40,7 @@ export default async function handler(req, res) {
       customer = await stripe.customers.create({
         email,
         name,
+        address: { country: 'NO' },
         metadata: {
           purchaser_name: name,
           purchaser_email: email,
