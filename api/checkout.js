@@ -92,6 +92,7 @@ console.log("✅ Faktura sendt manuelt etter opprettelse");
     customer = await stripe.customers.create({
       email,
       name,
+      address: { country: 'NO' },
       metadata: {
         purchaser_name: name,
         purchaser_email: email,
