@@ -54,6 +54,7 @@ export default async function handler(req, res) {
       const invoiceItem = await stripe.invoiceItems.create({
         customer: customer.id,
         price: priceId,
+        tax_rates: ['txr_1FSJLUAl3xtbZVsPHOU9gwuF'],
       });
 
       console.log("🧾 Invoice item created:", invoiceItem.id);
@@ -77,7 +78,6 @@ const invoice = await stripe.invoices.create({
     org_number: orgnr,
     payment_method: 'Faktura',
   },
-  automatic_tax: { enabled: true },
 });
 
 // 📨 Send faktura manuelt (for å sikre at den faktisk går ut)
@@ -112,9 +112,9 @@ console.log("✅ Faktura sendt manuelt etter opprettelse");
         {
           price: priceId,
           quantity: 1,
+          tax_rates: ['txr_1FSJLUAl3xtbZVsPHOU9gwuF'],
         },
       ],
-      automatic_tax: { enabled: true },
       success_url: `${BASE_URL}/takk-for-bestilling.html`,
       cancel_url: `${BASE_URL}/cancel.html`,
     });
