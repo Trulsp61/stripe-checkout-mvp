@@ -76,6 +76,7 @@ const invoice = await stripe.invoices.create({
     org_number: orgnr,
     payment_method: 'Faktura',
   },
+  automatic_tax: { enabled: true },
 });
 
 // 📨 Send faktura manuelt (for å sikre at den faktisk går ut)
@@ -111,6 +112,7 @@ console.log("✅ Faktura sendt manuelt etter opprettelse");
           quantity: 1,
         },
       ],
+      automatic_tax: { enabled: true },
       success_url: `${BASE_URL}/takk-for-bestilling.html`,
       cancel_url: `${BASE_URL}/cancel.html`,
     });
