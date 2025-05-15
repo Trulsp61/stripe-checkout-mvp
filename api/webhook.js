@@ -30,7 +30,7 @@ async function postToSlack(obj, metadata) {
 🏷️ **Org.nr:** ${metadata.org_number || 'Ukjent'}
 💳 *Betaling:* ${metadata.payment_method || obj.payment_method_types?.[0] || 'Ukjent'}
 
-🛠️ *Handling:* Bruk Cardboard og promokode for å opprette "Bedrift 10 lisenser"
+🛠️ *Handling:* Opprettet organisasjon i BO. Inviter kontakten som admin. Slett deg selv som admin. I Gå til kontakten i HubSpot. Sett Customer from SMB Campaign = Yes."
 `;
 
   try {
